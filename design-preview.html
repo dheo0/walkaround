@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>산책 앱 디자인 미리보기</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0f0f0;
+    padding: 32px;
+    color: #1a1a1a;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    color: #2E7D32;
+    margin-bottom: 32px;
+    font-weight: 700;
+  }
+
+  .screens {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .screen-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* 폰 프레임 */
+  .phone {
+    width: 280px;
+    height: 580px;
+    background: #fff;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 8px solid #222;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 20px;
+    background: #222;
+    border-radius: 0 0 14px 14px;
+    z-index: 10;
+  }
+
+  /* 공통 요소 */
+  .status-bar {
+    height: 32px;
+    background: inherit;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0 14px 4px;
+    font-size: 10px;
+    color: #666;
+    flex-shrink: 0;
+  }
+  .app-bar {
+    background: #fff;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+  .app-bar-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .app-bar-icon {
+    width: 28px; height: 28px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+  }
+  .content { flex: 1; overflow: hidden; position: relative; }
+
+  .bottom-nav {
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-shrink: 0;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #aaa;
+    cursor: pointer;
+  }
+  .nav-item.active { color: #4CAF50; }
+  .nav-icon { font-size: 20px; }
+
+  /* ── 로그인 화면 ── */
+  .login-screen {
+    background: #F5F9F0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 24px;
+    gap: 0;
+  }
+  .login-logo {
+    width: 80px; height: 80px;
+    background: #4CAF50;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(76,175,80,0.35);
+  }
+  .login-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #2E7D32;
+    margin-bottom: 6px;
+  }
+  .login-subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 60px;
+  }
+  .google-btn {
+    width: 100%;
+    height: 48px;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .google-icon {
+    width: 20px; height: 20px;
+    background: linear-gradient(135deg, #EA4335 0%, #FBBC05 33%, #34A853 66%, #4285F4 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 800;
+  }
+
+  /* ── 지도 화면 ── */
+  .map-bg {
+    width: 100%; height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .map-tiles {
+    width: 100%; height: 100%;
+    background:
+      linear-gradient(rgba(200,230,200,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,230,200,0.3) 1px, transparent 1px),
+      #E8F5E9;
+    background-size: 28px 28px;
+  }
+  .map-road-h {
+    position: absolute;
+    background: #fff;
+    border-radius: 4px;
+  }
+  .map-road-v {
+    position: absolute;
+    background: #fff;
+    border-radius: 4px;
+  }
+  /* 경로 라인 (SVG polyline) */
+  .map-route-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+  .map-marker {
+    position: absolute;
+    width: 24px; height: 24px;
+    background: #4CAF50;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .map-my-location {
+    position: absolute;
+    width: 16px; height: 16px;
+    background: #1976D2;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 6px rgba(25,118,210,0.2);
+  }
+  .map-fab {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    background: #4CAF50;
+    color: #fff;
+    border-radius: 24px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+    box-shadow: 0 4px 14px rgba(76,175,80,0.4);
+  }
+  .map-info-card {
+    position: absolute;
+    bottom: 52px; left: 12px; right: 12px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    font-size: 12px;
+  }
+  .map-info-title { font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
+  .map-info-meta { color: #888; font-size: 11px; display: flex; gap: 8px; }
+
+  /* ── 경로 목록 ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1; padding: 10px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #aaa;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+  }
+  .tab.active { color: #4CAF50; border-bottom-color: #4CAF50; }
+
+  .route-list {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    height: 100%;
+  }
+  .route-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+  }
+  .route-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 5px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .route-card-desc {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .route-card-meta {
+    display: flex; gap: 12px;
+  }
+  .meta-chip {
+    display: flex; align-items: center; gap: 3px;
+    font-size: 11px; color: #777;
+  }
+  .badge {
+    font-size: 10px;
+    background: #E8F5E9;
+    color: #4CAF50;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .badge-orange {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+
+  /* ── 경로 상세 ── */
+  .detail-map {
+    height: 200px;
+    background: #E8F5E9;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .detail-map-tiles {
+    width: 100%; height: 100%;
+    background:
+      linear-gradient(rgba(200,230,200,0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,230,200,0.4) 1px, transparent 1px),
+      #E8F5E9;
+    background-size: 22px 22px;
+  }
+  .detail-content {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+  }
+  .detail-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+  }
+  .stat-row {
+    display: flex; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    flex: 1;
+    background: #F5F9F0;
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .stat-icon { font-size: 18px; margin-bottom: 3px; }
+  .stat-val { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+  .stat-label { font-size: 10px; color: #888; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+  .section-text {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  /* ── 경로 만들기 ── */
+  .create-map {
+    height: 260px;
+    background: #E8F5E9;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .create-hint {
+    position: absolute;
+    top: 8px; left: 8px; right: 8px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-size: 11px;
+    color: #555;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .create-form {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+  }
+  .form-field {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .form-label { font-size: 10px; color: #888; margin-bottom: 3px; }
+  .form-value { font-size: 13px; color: #333; }
+  .form-placeholder { font-size: 13px; color: #bbb; }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .diff-chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #eee;
+    color: #888;
+    cursor: pointer;
+  }
+  .diff-chip.sel { background: #4CAF50; color: #fff; }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0;
+  }
+  .toggle-label { font-size: 13px; color: #444; }
+  .toggle {
+    width: 38px; height: 22px;
+    background: #4CAF50;
+    border-radius: 11px;
+    position: relative;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    right: 3px; top: 3px;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  /* ── 프로필 ── */
+  .profile-header {
+    background: #F5F9F0;
+    padding: 20px 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .avatar {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 14px rgba(76,175,80,0.3);
+  }
+  .profile-name { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+  .profile-email { font-size: 12px; color: #888; margin-top: 3px; }
+  .profile-stats {
+    display: flex;
+    border-top: 1px solid #e5f0e5;
+    margin-top: 14px;
+  }
+  .profile-stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+  }
+  .profile-stat-num { font-size: 18px; font-weight: 700; color: #4CAF50; }
+  .profile-stat-label { font-size: 10px; color: #888; }
+  .divider { height: 1px; background: #eee; margin: 0; }
+  .my-routes {
+    padding: 12px;
+    flex: 1;
+    overflow-y: auto;
+  }
+  .my-routes-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1a1a1a;
+  }
+</style>
+</head>
+<body>
+
+<h1>🚶 산책 앱 화면 미리보기</h1>
+
+<div class="screens">
+
+  <!-- ① 로그인 -->
+  <div class="screen-wrap">
+    <div class="screen-label">① 로그인</div>
+    <div class="phone" style="background:#F5F9F0;">
+      <div style="height:32px;"></div>
+      <div class="login-screen">
+        <div class="login-logo">🚶</div>
+        <div class="login-title">산책</div>
+        <div class="login-subtitle">내 주변 산책 코스를 찾아보세요</div>
+        <div class="google-btn">
+          <div class="google-icon">G</div>
+          Google로 계속하기
+        </div>
+        <div style="margin-top:14px;font-size:11px;color:#bbb;">소셜 로그인으로 간편하게 시작하세요</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 지도 메인 -->
+  <div class="screen-wrap">
+    <div class="screen-label">② 지도 (메인)</div>
+    <div class="phone">
+      <div class="status-bar" style="background:#fff;">9:41 ▲▲▲</div>
+      <div class="app-bar">
+        <span class="app-bar-title">산책</span>
+        <div class="app-bar-icon">☰</div>
+      </div>
+      <div class="content">
+        <div class="map-bg">
+          <div class="map-tiles"></div>
+          <!-- 도로 -->
+          <div class="map-road-h" style="top:50%;left:0;right:0;height:8px;transform:translateY(-50%)"></div>
+          <div class="map-road-v" style="left:40%;top:0;bottom:0;width:7px;transform:translateX(-50%)"></div>
+          <div class="map-road-h" style="top:30%;left:0;right:0;height:5px;transform:translateY(-50%)"></div>
+          <div class="map-road-v" style="left:70%;top:0;bottom:0;width:5px;"></div>
+          <!-- 경로 SVG -->
+          <svg class="map-route-svg" viewBox="0 0 264 348">
+            <polyline points="30,280 60,240 90,200 130,170 160,140 190,110 210,80" stroke="#4CAF50" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+            <polyline points="80,300 110,270 140,240 170,210 200,190 230,160" stroke="#81C784" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" stroke-dasharray="6,3"/>
+          </svg>
+          <!-- 마커들 -->
+          <div class="map-marker" style="top:68px;left:202px;"></div>
+          <div class="map-marker" style="top:148px;left:102px;background:#81C784;"></div>
+          <!-- 내 위치 -->
+          <div class="map-my-location" style="top:185px;left:145px;"></div>
+          <!-- 정보 카드 -->
+          <div class="map-info-card">
+            <div class="map-info-title">🌿 남산 순환 코스</div>
+            <div class="map-info-meta">
+              <span>📍 3.2km</span>
+              <span>⏱ 45분</span>
+              <span style="color:#4CAF50">쉬움</span>
+            </div>
+          </div>
+          <!-- FAB -->
+          <div class="map-fab">
+            <span>＋</span> 경로 만들기
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">🗺</div>지도</div>
+        <div class="nav-item"><div class="nav-icon">🛤</div>코스</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>프로필</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 경로 목록 -->
+  <div class="screen-wrap">
+    <div class="screen-label">③ 코스 목록</div>
+    <div class="phone">
+      <div class="status-bar" style="background:#fff;">9:41 ▲▲▲</div>
+      <div class="app-bar">
+        <span class="app-bar-title">산책 코스</span>
+        <div class="app-bar-icon">🔍</div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active">주변 코스</div>
+        <div class="tab">북마크</div>
+      </div>
+      <div class="content">
+        <div class="route-list">
+          <div class="route-card">
+            <div class="route-card-title">🌿 남산 순환 코스 <span class="badge">쉬움</span></div>
+            <div class="route-card-desc">남산 타워를 중심으로 한 바퀴 도는 인기 코스</div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 3.2km</div>
+              <div class="meta-chip">⏱ 45분</div>
+              <div class="meta-chip">0.8km 근처</div>
+            </div>
+          </div>
+          <div class="route-card">
+            <div class="route-card-title">🌸 한강공원 산책길 <span class="badge">쉬움</span></div>
+            <div class="route-card-desc">한강변을 따라 걷는 평탄한 코스</div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 5.1km</div>
+              <div class="meta-chip">⏱ 1시간</div>
+              <div class="meta-chip">1.2km 근처</div>
+            </div>
+          </div>
+          <div class="route-card">
+            <div class="route-card-title">🍃 인왕산 둘레길 <span class="badge badge-orange">보통</span></div>
+            <div class="route-card-desc">인왕산을 둘러가는 경관이 아름다운 코스</div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 4.8km</div>
+              <div class="meta-chip">⏱ 1시간 20분</div>
+              <div class="meta-chip">2.1km 근처</div>
+            </div>
+          </div>
+          <div class="route-card">
+            <div class="route-card-title">⭐ 내가 만든 코스 <span class="badge" style="background:#EDE7F6;color:#7B1FA2;">커스텀</span></div>
+            <div class="route-card-desc">집 주변 자주 가는 나만의 산책로</div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 1.5km</div>
+              <div class="meta-chip">⏱ 20분</div>
+              <div class="meta-chip">0.3km 근처</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon">🗺</div>지도</div>
+        <div class="nav-item active"><div class="nav-icon">🛤</div>코스</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>프로필</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 경로 상세 -->
+  <div class="screen-wrap">
+    <div class="screen-label">④ 코스 상세</div>
+    <div class="phone">
+      <div class="status-bar" style="background:#4CAF50;color:rgba(255,255,255,0.8);">9:41 ▲▲▲</div>
+      <div class="detail-map">
+        <div class="detail-map-tiles"></div>
+        <svg style="position:absolute;top:0;left:0;width:100%;height:100%;" viewBox="0 0 264 200">
+          <polyline points="20,160 50,130 90,100 130,80 170,60 210,40 250,30" stroke="#4CAF50" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="20" cy="160" r="7" fill="#4CAF50" stroke="#fff" stroke-width="2"/>
+          <circle cx="250" cy="30" r="7" fill="#E53935" stroke="#fff" stroke-width="2"/>
+        </svg>
+        <!-- 뒤로가기 + 북마크 -->
+        <div style="position:absolute;top:8px;left:8px;background:rgba(255,255,255,0.9);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.15)">←</div>
+        <div style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.9);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.15)">🔖</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,#fff);"></div>
+      </div>
+      <div class="detail-content">
+        <div class="detail-title">🌿 남산 순환 코스</div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-icon">📍</div>
+            <div class="stat-val">3.2km</div>
+            <div class="stat-label">거리</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">⏱</div>
+            <div class="stat-val">45분</div>
+            <div class="stat-label">소요 시간</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">🏔</div>
+            <div class="stat-val">쉬움</div>
+            <div class="stat-label">난이도</div>
+          </div>
+        </div>
+        <div class="section-title">코스 설명</div>
+        <div class="section-text">
+          남산타워를 중심으로 한 바퀴 도는 서울 대표 산책 코스입니다. 완만한 경사로 가족과 함께 걷기 좋습니다.
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:6px;font-size:11px;color:#888;">
+          <span>👤</span><span>서울시 공공데이터</span>
+          <span style="background:#E8F5E9;color:#4CAF50;padding:2px 7px;border-radius:10px;font-size:10px;">공공데이터</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 경로 만들기 -->
+  <div class="screen-wrap">
+    <div class="screen-label">⑤ 경로 만들기</div>
+    <div class="phone">
+      <div class="status-bar" style="background:#fff;">9:41 ▲▲▲</div>
+      <div class="app-bar">
+        <span style="font-size:13px;color:#555;">← 경로 만들기</span>
+        <span style="font-size:14px;font-weight:700;color:#4CAF50;cursor:pointer;">저장</span>
+      </div>
+      <div class="content" style="display:flex;flex-direction:column;">
+        <div class="create-map">
+          <div class="detail-map-tiles" style="background:
+            linear-gradient(rgba(200,230,200,0.4) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(200,230,200,0.4) 1px, transparent 1px),
+            #E8F5E9; background-size: 22px 22px;"></div>
+          <svg style="position:absolute;top:0;left:0;width:100%;height:100%;" viewBox="0 0 264 260">
+            <polyline points="40,200 80,160 120,130 160,100 200,75" stroke="#4CAF50" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8,3"/>
+            <circle cx="40" cy="200" r="8" fill="#4CAF50" stroke="#fff" stroke-width="2"/>
+            <circle cx="80" cy="160" r="6" fill="#81C784" stroke="#fff" stroke-width="2"/>
+            <circle cx="120" cy="130" r="6" fill="#81C784" stroke="#fff" stroke-width="2"/>
+            <circle cx="160" cy="100" r="6" fill="#81C784" stroke="#fff" stroke-width="2"/>
+            <circle cx="200" cy="75" r="8" fill="#FF5722" stroke="#fff" stroke-width="2"/>
+          </svg>
+          <div class="create-hint">
+            <span>👆</span>
+            <span>지도를 탭하여 경로 포인트 추가 (5개)</span>
+            <span style="margin-left:auto;font-size:11px;color:#E53935;cursor:pointer;">되돌리기</span>
+          </div>
+        </div>
+        <div class="create-form">
+          <div class="form-field">
+            <div class="form-label">경로 이름 *</div>
+            <div class="form-value">우리 동네 저녁 산책로</div>
+          </div>
+          <div class="form-field">
+            <div class="form-label">설명 (선택)</div>
+            <div class="form-placeholder">코스 소개를 입력하세요...</div>
+          </div>
+          <div style="padding:0 2px;margin-bottom:10px;">
+            <div style="font-size:12px;color:#666;margin-bottom:6px;">난이도</div>
+            <div class="chip-row">
+              <div class="diff-chip sel">쉬움</div>
+              <div class="diff-chip">보통</div>
+              <div class="diff-chip">어려움</div>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-label" style="font-size:12px;color:#666;">공개 설정</div>
+            <div class="toggle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 프로필 -->
+  <div class="screen-wrap">
+    <div class="screen-label">⑥ 프로필</div>
+    <div class="phone">
+      <div class="status-bar" style="background:#F5F9F0;">9:41 ▲▲▲</div>
+      <div class="app-bar" style="background:#F5F9F0;">
+        <span class="app-bar-title">내 프로필</span>
+        <div class="app-bar-icon">🚪</div>
+      </div>
+      <div class="content" style="display:flex;flex-direction:column;overflow-y:auto;">
+        <div class="profile-header">
+          <div class="avatar">😊</div>
+          <div class="profile-name">김산책</div>
+          <div class="profile-email">sancheck@gmail.com</div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-num">12</div>
+              <div class="profile-stat-label">만든 코스</div>
+            </div>
+            <div class="profile-stat" style="border-left:1px solid #e5f0e5;border-right:1px solid #e5f0e5;">
+              <div class="profile-stat-num">34</div>
+              <div class="profile-stat-label">북마크</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-num">128km</div>
+              <div class="profile-stat-label">총 거리</div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="my-routes">
+          <div class="my-routes-title">내가 만든 경로</div>
+          <div class="route-card" style="margin-bottom:8px;">
+            <div class="route-card-title">🌙 야간 한강 코스 <span class="badge" style="background:#EDE7F6;color:#7B1FA2;">커스텀</span></div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 2.4km</div>
+              <div class="meta-chip">⏱ 30분</div>
+              <div class="meta-chip" style="color:#4CAF50">공개</div>
+            </div>
+          </div>
+          <div class="route-card">
+            <div class="route-card-title">🏘 우리 동네 저녁 산책로 <span class="badge" style="background:#EDE7F6;color:#7B1FA2;">커스텀</span></div>
+            <div class="route-card-meta">
+              <div class="meta-chip">📍 1.8km</div>
+              <div class="meta-chip">⏱ 25분</div>
+              <div class="meta-chip" style="color:#888">비공개</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon">🗺</div>지도</div>
+        <div class="nav-item"><div class="nav-icon">🛤</div>코스</div>
+        <div class="nav-item active"><div class="nav-icon">👤</div>프로필</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:36px;color:#aaa;font-size:12px;">
+  산책 앱 · Flutter + Spring Boot · Google Maps · Supabase
+</div>
+
+</body>
+</html>
