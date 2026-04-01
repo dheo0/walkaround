@@ -1,0 +1,57 @@
+name: sancheck
+description: 산책 - 주변 산책 코스 추천 및 커스텀 경로 앱
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 상태 관리
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # 라우팅
+  go_router: ^13.2.0
+
+  # HTTP 클라이언트
+  dio: ^5.4.3+1
+
+  # 지도
+  google_maps_flutter: ^2.6.1
+
+  # Google 소셜 로그인
+  google_sign_in: ^6.2.1
+
+  # 보안 저장소 (JWT 토큰 저장)
+  flutter_secure_storage: ^9.0.0
+
+  # 위치 정보
+  geolocator: ^11.3.0
+
+  # 불변 모델
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+  # UI
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+  # 코드 생성
+  build_runner: ^2.4.9
+  riverpod_generator: ^2.4.3
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
