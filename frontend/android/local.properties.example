@@ -1,0 +1,11 @@
+# Flutter SDK 경로 (본인 환경에 맞게 수정)
+# 맥: /Users/<사용자명>/flutter
+# 예시:
+flutter.sdk=/Users/daeyoungoh/flutter
+
+# Android SDK 경로 (Android Studio 설치 시 자동 생성)
+# 맥: /Users/<사용자명>/Library/Android/sdk
+sdk.dir=/Users/daeyoungoh/Library/Android/sdk
+
+flutter.versionName=1.0.0
+flutter.versionCode=1
